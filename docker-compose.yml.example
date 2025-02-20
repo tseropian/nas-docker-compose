@@ -59,3 +59,18 @@ services:
       PLEX_GID: $PGID
       ADVERTISE_IP: http://192.168.50.10:32400/
       ALLOWED_NETWORKS: 192.168.50.0/24
+  transmission:
+    image: lscr.io/linuxserver/transmission
+    container_name: transmission
+    environment:
+      - PUID=1000 # User id
+      - PGID=1000 # Group id
+      - TZ=Europe/London # Your current timezone
+    volumes:
+      - ./transmission:/config # Change this to your docker config folder
+      - /home/thomas/Downloads:/downloads # Change this to your download folder
+    ports:
+      - 9091:9091 # Web UI port
+      - 51413:51413 # Torrent port (TCP)
+      - 51413:51413/udp # Torrent port (UDP)
+    restart: unless-stopped # This makes sure that the application restarts when it crashes
