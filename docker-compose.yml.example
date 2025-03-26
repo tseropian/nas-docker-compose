@@ -11,18 +11,21 @@ services:
       - TZ=Etc/UTC
     volumes:
       - ./lidarr:/config
-      - /media/thomas/8bdfe832-fe5b-40ed-bcfb-a468bb0dcf39/Gros/share/Audiotheque:/data
+      - /media/thomas/gros/Gros/share/Audiotheque:/data
   jellyfin:
-    image: jellyfin/jellyfin
+    image: jellyfin/jellyfin:latest
     container_name: jellyfin
 #    user: uid:gid
     network_mode: 'host'
     volumes:
-      - /path/to/config:/config
-      - /path/to/cache:/cache
+      - ./jellyfin:/config
+      - /tmp:/cache
       - type: bind
-        source: /media/thomas/8bdfe832-fe5b-40ed-bcfb-a468bb0dcf39/Gros/Plex
+        source: /media/thomas/gros/Gros/Plex
         target: /media
+      - type: bind
+        source: /media/thomas/gros/Gros/share/Audiotheque
+        target: /media-music
     restart: 'unless-stopped'
     extra_hosts:
       - 'host.docker.internal:host-gateway'
@@ -30,31 +33,16 @@ services:
     image: plexinc/pms-docker:public
     container_name: plex
     restart: unless-stopped
-    networks:
-      - default
-    ports:
-      - "32400:32400/tcp"
-      - "3005:3005/tcp"
-      - "8324:8324/tcp"
-      - "32469:32469/tcp"
-      - "1900:1900/udp"
-      - "32410:32410/udp"
-      - "32412:32412/udp"
-      - "32413:32413/udp"
-      - "32414:32414/udp"
-      - "33400:33400" # If you use Plex Web Tools
-      - "32500:32500"
-      - "20000:20000"
-
+    network_mode: host
     volumes:
       - ./plex:/config
       - ./plex/tmp:/transcode
-      - /media/thomas/8bdfe832-fe5b-40ed-bcfb-a468bb0dcf39/Gros/Plex:/data
-      - /media/thomas/8bdfe832-fe5b-40ed-bcfb-a468bb0dcf39/Gros/share/Audiotheque:/music
+      - /media/thomas/gros/Gros/Plex:/data
+      - /media/thomas/gros/Gros/share/Audiotheque:/music
     environment:
       TZ: $TZ
       HOSTNAME: "dockerPlex"
-      PLEX_CLAIM: claim-1-ALD1Fzx-bQ5W_uNuQg
+      PLEX_CLAIM: claim-xxxxxxx
       PLEX_UID: $PUID
       PLEX_GID: $PGID
       ADVERTISE_IP: http://192.168.50.10:32400/
